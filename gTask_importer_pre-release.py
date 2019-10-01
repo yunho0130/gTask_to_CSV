@@ -13,9 +13,11 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import pandas as pd
+from tqdm import tqdm
+import time
 
-def get_tasklists():
-    # If modifying these scopes, delete the file token.pickle.
+def google_authentication():
+# If modifying these scopes, delete the file token.pickle.
     SCOPES = ['https://www.googleapis.com/auth/tasks.readonly']
 
     """Shows basic usage of the Tasks API.
@@ -42,6 +44,10 @@ def get_tasklists():
 
     service = build('tasks', 'v1', credentials=creds)
 
+    return service
+
+def get_tasklists(service):
+    
     # Call the Tasks API
     results = service.tasklists().list().execute()
     items = results.get('items', [])
@@ -53,26 +59,19 @@ def get_tasklists():
         return items
 
 
-# In[13]:
-
-
-items = get_tasklists()
-
-
 # ### Get Tasks from Tasklists
-
-# In[14]:
-
 
 GLOBAL_COUNTER = 0
 # (tasklist=*, showCompleted=None, dueMin=None, dueMax=None, pageToken=None, updatedMin=None, showDeleted=None, completedMax=None, maxResults=None, completedMin=None, showHidden=None)
-def get_tasks_from_tasklist(task_list_id, task_list_title):
+def get_tasks_from_tasklist(task_list_id, task_list_title, service):
     df = pd.DataFrame()
     next_page_token = None
     global GLOBAL_COUNTER
+
     while (True):
         task_results = service.tasks().list(tasklist=task_list_id, pageToken=next_page_token).execute()
         df = df.append(pd.DataFrame.from_dict(task_results['items']))
+        df['category'] = task_list_title
         GLOBAL_COUNTER = GLOBAL_COUNTER + len(task_results['items'])
         try:
             next_page_token = task_results['nextPageToken']
@@ -89,53 +88,32 @@ def preprocess_df(df):
     df1 = df
     df2 = df[['id', 'title']].rename(columns={'id': 'parent','title': 'parent_title'})
     df3 = df1.merge(df2, on='parent', how ='left')
-    df3['category']=task_list_title
-    df3 = df3.sort_values(by='parent_title')
+    df3 = df3.sort_values(by='parent_title', sort=True)
     return df3[['category','parent_title', 'title', 'notes', 'updated', 'selfLink']]
 
 
-# In[ ]:
-
-
-preprocess_df(df)
-
-
 # ### Combine functions to make CSV file 
-
+def main():
 # In[135]:
 
+    service = google_authentication()
 
-### Initialize Dataframe
-df_result = pd.DataFrame()
+    ### Initialize Dataframe
+    df_result = pd.DataFrame()
 
-### Get Tasklists from Quickstart
-items = get_tasklists()
-for item in items:
-    ### Get Tasks from Tasklists
-    # function call
-    df_result = df_result.append(get_tasks_from_tasklist(item['id'], item['title']))
+    ### Get Tasklists from Quickstart
+    items = get_tasklists(service)
+    for item in tqdm(items):
+        ### Get Tasks from Tasklists
+        # function call
+        df_result = df_result.append(get_tasks_from_tasklist(item['id'], item['title'], service))
 
-### Modify dataframe form
-df_result = preprocess_df(df_result)
-df_result.to_csv('gTasks.csv', sep='\t', encoding='utf-8')
+    ### Modify dataframe form
+    df_result = preprocess_df(df_result)
+    df_result.to_csv('gTasks.csv', sep='\t', encoding='utf-8')
+    print (len(df_result), str(GLOBAL_COUNTER))
 
-
-# In[129]:
-
-
-get_ipython().system('ls')
-
-
-# ### Verify the result
-
-# In[136]:
-
-
-print (len(df_result), str(GLOBAL_COUNTER))
-
-
-# In[ ]:
-
-
+if __name__ == '__main__':
+    main()
 
 
