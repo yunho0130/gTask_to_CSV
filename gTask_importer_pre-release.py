@@ -70,7 +70,7 @@ def get_tasks_from_tasklist(task_list_id, task_list_title, service):
 
     while (True):
         task_results = service.tasks().list(tasklist=task_list_id, pageToken=next_page_token).execute()
-        df = df.append(pd.DataFrame.from_dict(task_results['items']))
+        df = df.append(pd.DataFrame.from_dict(task_results['items']), sort=False)
         df['category'] = task_list_title
         GLOBAL_COUNTER = GLOBAL_COUNTER + len(task_results['items'])
         try:
@@ -88,7 +88,7 @@ def preprocess_df(df):
     df1 = df
     df2 = df[['id', 'title']].rename(columns={'id': 'parent','title': 'parent_title'})
     df3 = df1.merge(df2, on='parent', how ='left')
-    df3 = df3.sort_values(by='parent_title', sort=True)
+    df3 = df3.sort_values(by='parent_title')
     return df3[['category','parent_title', 'title', 'notes', 'updated', 'selfLink']]
 
 
@@ -106,7 +106,7 @@ def main():
     for item in tqdm(items):
         ### Get Tasks from Tasklists
         # function call
-        df_result = df_result.append(get_tasks_from_tasklist(item['id'], item['title'], service))
+        df_result = df_result.append(get_tasks_from_tasklist(item['id'], item['title'], service), sort=False)
 
     ### Modify dataframe form
     df_result = preprocess_df(df_result)
