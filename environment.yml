@@ -1,4 +1,4 @@
-name: gcp
+name: gcp2
 channels:
   - defaults
 dependencies:
@@ -10,6 +10,7 @@ dependencies:
   - certifi=2019.6.16=py37_1
   - decorator=4.4.0=py37_1
   - defusedxml=0.6.0=py_0
+  - entrypoints=0.3=py37_0
   - ipykernel=5.1.2=py37h39e3cac_0
   - ipython=7.8.0=py37h39e3cac_0
   - ipython_genutils=0.2.0=py37_0
@@ -47,6 +48,7 @@ dependencies:
   - readline=7.0=h1de35cc_5
   - send2trash=1.5.0=py37_0
   - setuptools=41.0.1=py37_0
+  - six=1.12.0=py37_0
   - sqlite=3.29.0=ha441bb4_0
   - terminado=0.8.2=py37_0
   - testpath=0.4.2=py37_0
@@ -62,7 +64,6 @@ dependencies:
   - pip:
     - cachetools==3.1.1
     - chardet==3.0.4
-    - entrypoints==0.3
     - google-api-python-client==1.7.11
     - google-auth==1.6.3
     - google-auth-httplib2==0.0.3
@@ -80,7 +81,7 @@ dependencies:
     - requests==2.22.0
     - requests-oauthlib==1.2.0
     - rsa==4.0
-    - six==1.12.0
+    - tqdm==4.36.1
     - uritemplate==3.0.0
     - urllib3==1.25.3
-prefix: /anaconda3/envs/gcp
+prefix: /anaconda3/envs/gcp2
