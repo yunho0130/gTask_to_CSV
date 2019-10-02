@@ -1,5 +1,5 @@
 {
-    "app_name": "gTask_to_CSV",
+    "app_name": "gTask to CSV",
     "author": "Yunho Maeng",
     "main_module": "src/main/python/main.py",
     "version": "0.0.0"

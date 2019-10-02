@@ -4,6 +4,8 @@ from __future__ import print_function
 import sys
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
+from fbs_runtime.application_context.PyQt5 import ApplicationContext
+from PyQt5.QtWidgets import QMainWindow
 ###### PyQt import line ######
 
 import webbrowser
@@ -56,7 +58,6 @@ class MyWindow(QMainWindow, form_class):
         Developer: Yunho Maeng
         Version: v0.3
         Release Date: 2019-10-08
-
         Please check out Github repository for up-to-date version
         https://github.com/yunho0130/gTask_to_CSV
         """
@@ -86,7 +87,10 @@ class MyWindow(QMainWindow, form_class):
 #         pass
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    appctxt = ApplicationContext() 
     myWindow = MyWindow()
     myWindow.show()
-    app.exec_()
+    # app = QApplication(sys.argv)
+    exit_code = appctxt.app.exec_()
+    # app.exec_()
+    sys.exit(exit_code)
