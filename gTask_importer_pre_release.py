@@ -89,7 +89,7 @@ def get_tasks_from_tasklist(task_list_id, task_list_title, service):
 
 
 def preprocess_df(df):
-    df1 = df
+    df1 = df.rename(columns={'id': 'parent','title': 'parent_title'})
     df2 = df[['id', 'title']].rename(columns={'id': 'parent','title': 'parent_title'})
     df3 = df1.merge(df2, on='parent', how ='left')
     df3 = df3.sort_values(by='parent_title')
